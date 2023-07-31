@@ -72,7 +72,7 @@ export default function TokenPage() {
             return;
         }
         fetch(
-            `${serverUrl}/token`,
+            `${serverUrl}/refreshToken`,
             {
                 "method": "POST",
                 "headers": {
