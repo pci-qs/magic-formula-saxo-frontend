@@ -44,14 +44,15 @@ export default function TokenPage() {
                 })
             }
         ).then((response) => {
-            if (response.ok) {
+            if (response.ok) {                
                 response.json().then((responseJson) => {
-                    setToken(responseJson.token);
-                    setRefreshToken(responseJson.refreshToken);
+                    const data = responseJson.data;
+                    setToken(data.access_token);
+                    setRefreshToken(data.refresh_token);
                     const accessTokenExpirationTime = new Date();
                     const refreshTokenExpirationTime = new Date();
-                    accessTokenExpirationTime.setSeconds(accessTokenExpirationTime.getSeconds() + responseJson.expires_in);
-                    refreshTokenExpirationTime.setSeconds(refreshTokenExpirationTime.getSeconds() + responseJson.refresh_token_expires_in);
+                    accessTokenExpirationTime.setSeconds(accessTokenExpirationTime.getSeconds() + data.expires_in);
+                    refreshTokenExpirationTime.setSeconds(refreshTokenExpirationTime.getSeconds() + data.refresh_token_expires_in);
                     setAccessTokenExpirationTime(accessTokenExpirationTime);
                     setRefreshTokenExpirationTime(refreshTokenExpirationTime);                    
                 });
