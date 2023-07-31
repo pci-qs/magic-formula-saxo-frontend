@@ -9,6 +9,8 @@ import LoginPage from './pages/LoginPage';
 import Page404 from './pages/Page404';
 import ProductsPage from './pages/ProductsPage';
 import DashboardAppPage from './pages/DashboardAppPage';
+import AuthPage from './pages/AuthPage';
+import TokenPage from './pages/TokenPage';
 
 // ----------------------------------------------------------------------
 
@@ -29,10 +31,13 @@ export default function Router() {
       path: 'login',
       element: <LoginPage />,
     },
+    
     {
       element: <SimpleLayout />,
       children: [
         { element: <Navigate to="/dashboard/app" />, index: true },
+        { path: 'authorize', element: <AuthPage />,},
+        { path: 'token', element: <TokenPage />,},
         { path: '404', element: <Page404 /> },
         { path: '*', element: <Navigate to="/404" /> },
       ],
