@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async';
 // @mui
 import { Button, Container, Stack, Typography } from '@mui/material';
 
-
+const serverUrl = "http://localhost:1337/api/authentication"
 export default function TokenPage() {
     const [token, setToken] = useState("No token");
     const [refreshToken, setRefreshToken] = useState("No refresh token");
@@ -32,7 +32,7 @@ export default function TokenPage() {
             return;
         }
         fetch(
-            "server",
+            `${serverUrl}/token`,
             {
                 "method": "POST",
                 "headers": {
