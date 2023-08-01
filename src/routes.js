@@ -27,15 +27,14 @@ export default function Router() {
         { path: 'blog', element: <BlogPage /> },
       ],
     },
-    {
-      path: 'login',
-      element: <LoginPage />,
-    },
+    
     
     {
+      path: '/',
       element: <SimpleLayout />,
       children: [
-        { element: <Navigate to="/dashboard/app" />, index: true },
+        { path: '/', element: <Navigate to="/login" /> },
+        { path: 'login', element: <LoginPage />, },
         { path: 'authorize', element: <AuthPage />,},
         { path: 'token', element: <TokenPage />,},
         { path: '404', element: <Page404 /> },
