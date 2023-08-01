@@ -1,16 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Helmet } from 'react-helmet-async';
 // @mui
-import { Button, Container, Stack, Typography } from '@mui/material';
+import { Container, Stack, Typography } from '@mui/material';
+import { Navigate } from 'react-router-dom';
 
 const serverUrl = "http://localhost:1337/api/authentication"
-export default function TokenPage() {
-    const [token, setToken] = useState("No token");
-    const [hasToken, setHasToken] = useState(false);
-    const [refreshToken, setRefreshToken] = useState("No refresh token");
-    const [accessTokenExpirationTime, setAccessTokenExpirationTime] = useState(new Date(1990, 0, 1));
-    const [refreshTokenExpirationTime, setRefreshTokenExpirationTime] = useState(new Date(1990, 0, 1));
+
+export default function TokenPage() {    
+    const [hasToken, setHasToken] = useState(false);    
+    
+    useEffect(() => {
+        if (!hasToken){
+            getToken();
+        }
+        else{
+            Navigate({to: '/dashboard/app'});
+        }
+    }, [hasToken])
     let code;
     /**
      * After a successful authentication, the code can be found as query parameter.
@@ -28,6 +35,7 @@ export default function TokenPage() {
     }
 
     const getToken =() => {
+        getCode();
         if (code === undefined) {
             console.error("Get a code first..");
             return;
@@ -48,62 +56,22 @@ export default function TokenPage() {
             if (response.ok) {                
                 response.json().then((responseJson) => {
                     const {data} = responseJson;
-                    setToken(data.access_token);
-                    setHasToken(true);
-                    setRefreshToken(data.refresh_token);
-                    const accessTokenExpirationTime = new Date();
-                    const refreshTokenExpirationTime = new Date();
-                    accessTokenExpirationTime.setSeconds(accessTokenExpirationTime.getSeconds() + data.expires_in);
-                    refreshTokenExpirationTime.setSeconds(refreshTokenExpirationTime.getSeconds() + data.refresh_token_expires_in);
-                    setAccessTokenExpirationTime(accessTokenExpirationTime);
-                    setRefreshTokenExpirationTime(refreshTokenExpirationTime);                    
+                    if (data === "Token received"){
+                        setHasToken(true);
+                    }                  
+                    else{
+                        setHasToken(false);
+                    }
                 });
             } else {
-                // demo.processError(response);
+                setHasToken(false);
             }
         }).catch((error) => {
             console.error(error);
+            setHasToken(false);
         });
     }
     
-    const refreshAccessToken =() => {
-        if (!hasToken) {
-            console.error("Get a token first..");
-            return;
-        }
-        fetch(
-            `${serverUrl}/refreshToken`,
-            {
-                "method": "POST",
-                "headers": {
-                    "Content-Type": "application/json; charset=utf-8",
-                    "Accept": "application/json; charset=utf-8"
-                },
-                "body": JSON.stringify({
-                    "refresh_token": refreshToken
-                })
-            }
-        ).then((response) => {
-            if (response.ok) {                
-                response.json().then((responseJson) => {
-                    const {data} = responseJson;
-                    setToken(data.access_token);
-                    setHasToken(true);
-                    setRefreshToken(data.refresh_token);
-                    const accessTokenExpirationTime = new Date();
-                    const refreshTokenExpirationTime = new Date();
-                    accessTokenExpirationTime.setSeconds(accessTokenExpirationTime.getSeconds() + data.expires_in);
-                    refreshTokenExpirationTime.setSeconds(refreshTokenExpirationTime.getSeconds() + data.refresh_token_expires_in);
-                    setAccessTokenExpirationTime(accessTokenExpirationTime);
-                    setRefreshTokenExpirationTime(refreshTokenExpirationTime);                    
-                });
-            } else {
-                // demo.processError(response);
-            }
-        }).catch((error) => {
-            console.error(error);
-        });
-    }
     return (
         <>
             <Helmet>
@@ -112,34 +80,10 @@ export default function TokenPage() {
 
             <Container>
                 <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-                    <Typography variant="h4" gutterBottom>
-                        Get Token
+                    <Typography variant="h5" gutterBottom>
+                        {hasToken? "Token received": "Receiving Token"}
                     </Typography>
                 </Stack>
-
-                <Typography variant='h5'>
-                    Code: {getCode()}
-                </Typography>
-                <Button fullWidth size="large" type="submit" variant="contained" onClick={getToken}>
-                    Get token
-                </Button>
-                
-                <Typography variant='h6'>
-                    Token: {token}
-                </Typography>
-                <Typography variant='h6'>
-                    Refresh token: {refreshToken}
-                </Typography>
-                <Typography variant='h6'>
-                    Access token expires: {accessTokenExpirationTime.toLocaleString()}
-                </Typography>
-                <Typography variant='h6'>
-                    Refresh token expires: {refreshTokenExpirationTime.toLocaleString()}
-                </Typography>
-                (hasToken & 
-                    <Button fullWidth size="large" type="submit" variant="contained" onClick={refreshAccessToken}>
-                    Refresh token
-                </Button>)
             </Container>
         </>
 
