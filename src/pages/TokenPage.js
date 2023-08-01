@@ -3,19 +3,19 @@ import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 // @mui
 import { Container, Stack, Typography } from '@mui/material';
-import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const serverUrl = "http://localhost:1337/api/authentication"
 
 export default function TokenPage() {    
     const [hasToken, setHasToken] = useState(false);    
-    
+    const navigate = useNavigate();
     useEffect(() => {
         if (!hasToken){
             getToken();
         }
         else{
-            Navigate({to: '/dashboard/app'});
+            navigate('/dashboard/app');
         }
     }, [hasToken])
     let code;
@@ -56,6 +56,7 @@ export default function TokenPage() {
             if (response.ok) {                
                 response.json().then((responseJson) => {
                     const {data} = responseJson;
+                    console.log("Data", data);
                     if (data === "Token received"){
                         setHasToken(true);
                     }                  
